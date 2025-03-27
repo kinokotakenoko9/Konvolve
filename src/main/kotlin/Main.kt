@@ -3,6 +3,7 @@ package org.example
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferInt
 import java.io.File
+import java.util.concurrent.Executors
 import javax.imageio.ImageIO
 import kotlin.math.*
 
@@ -32,28 +33,251 @@ fun generateGaussianKernel(size: Int, sigma: Float): Array<FloatArray> {
     return kernel
 }
 
-val kernelSize = 15
+val kernelSize = 43
 val kernelGB = generateGaussianKernel(kernelSize, kernelSize / 6f)
 
 fun main() {
 
     val startTime = System.nanoTime()
-    simpleApply()
+//    simpleApply("cat.bmp", kernelGB) // 8296
+//    applyGaussianBlurParallelPixels("cat.bmp", kernelGB) // 6894
+//    applyGaussianBlurParallelRows("cat.bmp", kernelGB) // 6894
+//    applyGaussianBlurParallelColumns("cat.bmp", kernelGB)
+    applyGaussianBlurParallelGrid("view.bmp", kernelGB, 32)
     val endTime = System.nanoTime()
     val duration = (endTime - startTime) / 1_000_000
     print("done; " + duration + "ms")
 }
 
-private fun simpleApply() {
-    val filename = "rose.bmp"
+
+fun applyGaussianBlurParallelPixels(filename: String, kernel: Array<FloatArray>) {
+    val imagePath = "assets/images/input/$filename"
+    val image = ImageIO.read(File(imagePath)).toRGB()
+
+    val width = image.width
+    val height = image.height
+    val inputPixels = (image.raster.dataBuffer as DataBufferInt).data.clone()
+    val outputPixels = (image.raster.dataBuffer as DataBufferInt).data
+    val kernelSize = kernel.size
+    val kernelOffset = kernelSize / 2
+
+    val executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+
+    for (y in 0 until height) {
+        for (x in 0 until width) {
+            executor.execute {
+                var sumR = 0f
+                var sumG = 0f
+                var sumB = 0f
+                for (ky in 0 until kernelSize) {
+                    for (kx in 0 until kernelSize) {
+                        val px = (x + kx - kernelOffset).coerceIn(0, width - 1)
+                        val py = (y + ky - kernelOffset).coerceIn(0, height - 1)
+                        val color = inputPixels[py * width + px]
+                        val r = (color shr 16) and 0xFF
+                        val g = (color shr 8) and 0xFF
+                        val b = color and 0xFF
+                        sumR += r * kernel[ky][kx]
+                        sumG += g * kernel[ky][kx]
+                        sumB += b * kernel[ky][kx]
+                    }
+                }
+                val newColor = ((sumR.toInt().coerceIn(0, 255) shl 16) or
+                        (sumG.toInt().coerceIn(0, 255) shl 8) or
+                        (sumB.toInt().coerceIn(0, 255)))
+                outputPixels[y * width + x] = newColor
+            }
+        }
+    }
+    executor.shutdown()
+    while (!executor.isTerminated) {
+    }
+
+    val imageOut = BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_RGB)
+    val imageOutData = (imageOut.raster.dataBuffer as DataBufferInt).data
+    System.arraycopy(outputPixels, 0, imageOutData, 0, outputPixels.size)
+
+    ImageIO.write(imageOut, "bmp", File("assets/images/output/$filename"))
+}
+
+fun applyGaussianBlurParallelRows(filename: String, kernel: Array<FloatArray>) {
+    val imagePath = "assets/images/input/$filename"
+    val image = ImageIO.read(File(imagePath)).toRGB()
+
+    val width = image.width
+    val height = image.height
+    val inputPixels = (image.raster.dataBuffer as DataBufferInt).data.clone()
+    val outputPixels = (image.raster.dataBuffer as DataBufferInt).data
+    val kernelSize = kernel.size
+    val kernelOffset = kernelSize / 2
+
+    val executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+
+    for (y in 0 until height) {
+        executor.execute {
+            for (x in 0 until width) {
+
+                var sumR = 0f
+                var sumG = 0f
+                var sumB = 0f
+                for (ky in 0 until kernelSize) {
+                    for (kx in 0 until kernelSize) {
+                        val px = (x + kx - kernelOffset).coerceIn(0, width - 1)
+                        val py = (y + ky - kernelOffset).coerceIn(0, height - 1)
+                        val color = inputPixels[py * width + px]
+                        val r = (color shr 16) and 0xFF
+                        val g = (color shr 8) and 0xFF
+                        val b = color and 0xFF
+                        sumR += r * kernel[ky][kx]
+                        sumG += g * kernel[ky][kx]
+                        sumB += b * kernel[ky][kx]
+                    }
+                }
+                val newColor = ((sumR.toInt().coerceIn(0, 255) shl 16) or
+                        (sumG.toInt().coerceIn(0, 255) shl 8) or
+                        (sumB.toInt().coerceIn(0, 255)))
+                outputPixels[y * width + x] = newColor
+            }
+        }
+    }
+    executor.shutdown()
+    while (!executor.isTerminated) {
+    }
+
+    val imageOut = BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_RGB)
+    val imageOutData = (imageOut.raster.dataBuffer as DataBufferInt).data
+    System.arraycopy(outputPixels, 0, imageOutData, 0, outputPixels.size)
+
+    ImageIO.write(imageOut, "bmp", File("assets/images/output/$filename"))
+}
+
+fun applyGaussianBlurParallelColumns(filename: String, kernel: Array<FloatArray>) {
+    val imagePath = "assets/images/input/$filename"
+    val image = ImageIO.read(File(imagePath)).toRGB()
+
+    val width = image.width
+    val height = image.height
+    val inputPixels = (image.raster.dataBuffer as DataBufferInt).data.clone()
+    val outputPixels = (image.raster.dataBuffer as DataBufferInt).data
+    val kernelSize = kernel.size
+    val kernelOffset = kernelSize / 2
+
+    val executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+
+    for (x in 0 until width) {
+        executor.execute {
+            for (y in 0 until height) {
+
+                var sumR = 0f
+                var sumG = 0f
+                var sumB = 0f
+                for (ky in 0 until kernelSize) {
+                    for (kx in 0 until kernelSize) {
+                        val px = (x + kx - kernelOffset).coerceIn(0, width - 1)
+                        val py = (y + ky - kernelOffset).coerceIn(0, height - 1)
+                        val color = inputPixels[py * width + px]
+                        val r = (color shr 16) and 0xFF
+                        val g = (color shr 8) and 0xFF
+                        val b = color and 0xFF
+                        sumR += r * kernel[ky][kx]
+                        sumG += g * kernel[ky][kx]
+                        sumB += b * kernel[ky][kx]
+                    }
+                }
+                val newColor = ((sumR.toInt().coerceIn(0, 255) shl 16) or
+                        (sumG.toInt().coerceIn(0, 255) shl 8) or
+                        (sumB.toInt().coerceIn(0, 255)))
+                outputPixels[y * width + x] = newColor
+            }
+        }
+    }
+    executor.shutdown()
+    while (!executor.isTerminated) {
+    }
+
+    val imageOut = BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_RGB)
+    val imageOutData = (imageOut.raster.dataBuffer as DataBufferInt).data
+    System.arraycopy(outputPixels, 0, imageOutData, 0, outputPixels.size)
+
+    ImageIO.write(imageOut, "bmp", File("assets/images/output/$filename"))
+}
+
+fun applyGaussianBlurParallelGrid(filename: String, kernel: Array<FloatArray>, blockSize: Int) {
+    val imagePath = "assets/images/input/$filename"
+    val image = ImageIO.read(File(imagePath)).toRGB()
+
+    val width = image.width
+    val height = image.height
+    val inputPixels = (image.raster.dataBuffer as DataBufferInt).data.clone()
+    val outputPixels = (image.raster.dataBuffer as DataBufferInt).data
+    val kernelSize = kernel.size
+    val kernelOffset = kernelSize / 2
+
+    val executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
+
+    // Iterate through the image in blocks
+    for (blockY in 0 until height step blockSize) {
+        for (blockX in 0 until width step blockSize) {
+            executor.execute {
+                val blockEndX = min(blockX + blockSize, width)
+                val blockEndY = min(blockY + blockSize, height)
+
+                for (y in blockY until blockEndY) {
+                    for (x in blockX until blockEndX) {
+                        var sumR = 0f
+                        var sumG = 0f
+                        var sumB = 0f
+
+                        // Apply Gaussian kernel to each pixel inside the block
+                        for (ky in 0 until kernelSize) {
+                            for (kx in 0 until kernelSize) {
+                                val px = (x + kx - kernelOffset).coerceIn(0, width - 1)
+                                val py = (y + ky - kernelOffset).coerceIn(0, height - 1)
+                                val color = inputPixels[py * width + px]
+
+                                val r = (color shr 16) and 0xFF
+                                val g = (color shr 8) and 0xFF
+                                val b = color and 0xFF
+
+                                sumR += r * kernel[ky][kx]
+                                sumG += g * kernel[ky][kx]
+                                sumB += b * kernel[ky][kx]
+                            }
+                        }
+
+                        // Clamp values and store the new pixel
+                        val newR = sumR.toInt().coerceIn(0, 255)
+                        val newG = sumG.toInt().coerceIn(0, 255)
+                        val newB = sumB.toInt().coerceIn(0, 255)
+
+                        outputPixels[y * width + x] = (newR shl 16) or (newG shl 8) or newB
+                    }
+                }
+            }
+        }
+    }
+
+    executor.shutdown()
+    while (!executor.isTerminated) {
+    }
+
+    val imageOut = BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_RGB)
+    val imageOutData = (imageOut.raster.dataBuffer as DataBufferInt).data
+    System.arraycopy(outputPixels, 0, imageOutData, 0, outputPixels.size)
+
+    ImageIO.write(imageOut, "bmp", File("assets/images/output/$filename"))
+}
+
+
+private fun simpleApply(filename: String, k: Array<FloatArray>) {
     val imagePath = "assets/images/input/$filename"
     val image = ImageIO.read(File(imagePath)).toRGB()
 
     val imageData = (image.raster.dataBuffer as DataBufferInt).data.clone()
     val newImageData = IntArray(imageData.size)
 
-    val kernelHeight = kernelGB.size
-    val kernelWidth = kernelGB[0].size
+    val kernelHeight = k.size
+    val kernelWidth = k[0].size
     val imagew = image.width
     val imageh = image.height
 
@@ -77,8 +301,6 @@ private fun simpleApply() {
                     val g = (p shr 8) and 0xFF
                     val b = p and 0xFF
 
-//                    println("$r;$g;$b ---${ky * 3 + kx}--- $x,$y")
-
                     sumR += r * kernelGB[ky][kx]
                     sumG += g * kernelGB[ky][kx]
                     sumB += b * kernelGB[ky][kx]
@@ -88,7 +310,7 @@ private fun simpleApply() {
             val newR = sumR.toInt().coerceIn(0, 255)
             val newG = sumG.toInt().coerceIn(0, 255)
             val newB = sumB.toInt().coerceIn(0, 255)
-//            println("$newR;$newG;$newB $x,$y")
+
             newImageData[y * imagew + x] = (newR shl 16) or (newG shl 8) or newB
         }
     }

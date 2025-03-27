@@ -33,20 +33,42 @@ fun generateGaussianKernel(size: Int, sigma: Float): Array<FloatArray> {
     return kernel
 }
 
-val kernelSize = 43
+val kernelSize = 31
 val kernelGB = generateGaussianKernel(kernelSize, kernelSize / 6f)
 
 fun main() {
 
-    val startTime = System.nanoTime()
-//    simpleApply("cat.bmp", kernelGB) // 8296
-//    applyGaussianBlurParallelPixels("cat.bmp", kernelGB) // 6894
-//    applyGaussianBlurParallelRows("cat.bmp", kernelGB) // 6894
-//    applyGaussianBlurParallelColumns("cat.bmp", kernelGB)
-    applyGaussianBlurParallelGrid("view.bmp", kernelGB, 32)
-    val endTime = System.nanoTime()
-    val duration = (endTime - startTime) / 1_000_000
-    print("done; " + duration + "ms")
+    val imgName = "view.bmp"
+
+    var startTime = System.nanoTime()
+    simpleApply(imgName, kernelGB)
+    var endTime = System.nanoTime()
+    var duration = (endTime - startTime) / 1_000_000
+    println("simpleApply; " + duration + "ms")
+
+    startTime = System.nanoTime()
+    applyGaussianBlurParallelPixels(imgName, kernelGB)
+    endTime = System.nanoTime()
+    duration = (endTime - startTime) / 1_000_000
+    println("applyGaussianBlurParallelPixels; " + duration + "ms")
+
+    startTime = System.nanoTime()
+    applyGaussianBlurParallelRows(imgName, kernelGB)
+    endTime = System.nanoTime()
+    duration = (endTime - startTime) / 1_000_000
+    println("applyGaussianBlurParallelRows; " + duration + "ms")
+
+    startTime = System.nanoTime()
+    applyGaussianBlurParallelColumns(imgName, kernelGB)
+    endTime = System.nanoTime()
+    duration = (endTime - startTime) / 1_000_000
+    println("applyGaussianBlurParallelColumns; " + duration + "ms")
+
+    startTime = System.nanoTime()
+    applyGaussianBlurParallelGrid(imgName, kernelGB, 48)
+    endTime = System.nanoTime()
+    duration = (endTime - startTime) / 1_000_000
+    println("applyGaussianBlurParallelGrid; " + duration + "ms")
 }
 
 

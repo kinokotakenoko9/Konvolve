@@ -53,37 +53,16 @@ class GaussianKernel(val kernelSize: Int) : Kernel {
 data class Pixel (val red: Int, val green: Int, val blue: Int)
 
 interface ParallelismStrategy {
-    fun parallelise(f: (p : Pixel) -> Unit)
+    fun parallelise(imageData: Filter, kernel: Kernel, f: (p : Pixel) -> Unit)
 }
 
-interface Filter {
-    fun writeToFile()
-    fun applyKernel(kernel: Kernel, parallelMode: ParallelismStrategy)
-
-
-}
-
-open class Image(private val filename: String) : Filter {
-    private val image = ImageIO.read(File("assets/images/input/$filename")).toRGB()
-    private val width = image.width
-    private val height = image.height
-
-    override fun writeToFile() {
-        ImageIO.write(image, "bmp", File("assets/images/output/$filename"))
-    }
-
-    override fun applyKernel(kernel: Kernel, parallelismStrategy: ParallelismStrategy) {
-
-        val inputPixels = (image.raster.dataBuffer as DataBufferInt).data.clone()
-        val outputPixels = (image.raster.dataBuffer as DataBufferInt).data
+object GridParallelismStrategy : ParallelismStrategy{
+    override fun parallelise(image: Filter, kernel: Kernel, f: (p: Pixel) -> Unit) {
         val kernelSize = kernel.size
         val kernelOffset = kernelSize / 2
 
         val executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
 
-        parallelismStrategy.parallelise { p ->
-
-        }
 
         // Iterate through the image in blocks
         for (blockY in 0 until height step blockSize) {
@@ -130,6 +109,36 @@ open class Image(private val filename: String) : Filter {
         executor.shutdown()
         while (!executor.isTerminated) {
         }
+    }
+
+}
+
+interface Filter {
+    fun writeToFile()
+    fun applyKernel(kernel: Kernel, parallelMode: ParallelismStrategy)
+
+
+}
+
+open class Image(private val filename: String) : Filter {
+    private val image = ImageIO.read(File("assets/images/input/$filename")).toRGB()
+    private val width = image.width
+    private val height = image.height
+
+    override fun writeToFile() {
+        ImageIO.write(image, "bmp", File("assets/images/output/$filename"))
+    }
+
+    override fun applyKernel(kernel: Kernel, parallelismStrategy: ParallelismStrategy) {
+
+        val inputPixels = (image.raster.dataBuffer as DataBufferInt).data.clone()
+        val outputPixels = (image.raster.dataBuffer as DataBufferInt).data
+
+        parallelismStrategy.parallelise(outputPixels, kernel) { p ->
+
+        }
+
+
 
         val imageOut = BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_RGB)
         val imageOutData = (imageOut.raster.dataBuffer as DataBufferInt).data

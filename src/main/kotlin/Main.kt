@@ -1,5 +1,7 @@
 package org.example
 
+import org.example.kernels.Kernel
+import org.example.parallelismStrategies.ParallelismStrategy
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferInt
 import java.io.File
@@ -7,146 +9,14 @@ import java.util.concurrent.Executors
 import javax.imageio.ImageIO
 import kotlin.math.*
 
-interface Kernel {
-    val kernel:Array<FloatArray>
 
-    val size: Int
-        get() = kernel.size
-
-    fun getCoeff(x : Int, y : Int): Float {
-        return kernel[y][x]
-    }
-}
-
-class GaussianKernel(val kernelSize: Int) : Kernel {
-    private val sigma = kernelSize / 6f
-    private fun generateGaussianKernel(size: Int, sigma: Float): Array<FloatArray> {
-        require(size % 2 == 1) { "Kernel size must be odd" }
-
-        val kernel = Array(size) { FloatArray(size) }
-        val mean = size / 2
-        var sum = 0f
-
-        for (y in 0 until size) {
-            for (x in 0 until size) {
-                val dx = (x - mean).toFloat()
-                val dy = (y - mean).toFloat()
-
-                kernel[y][x] = exp(-(dx * dx + dy * dy) / (2 * sigma * sigma)) / (2 * PI.toFloat() * sigma * sigma)
-                sum += kernel[y][x]
-            }
-        }
-
-        for (y in 0 until size) {
-            for (x in 0 until size) {
-                kernel[y][x] /= sum
-            }
-        }
-
-        return kernel
-    }
-
-    override val kernel = generateGaussianKernel(kernelSize, sigma)
-
-}
 
 data class Pixel (val red: Int, val green: Int, val blue: Int)
 
-interface ParallelismStrategy {
-    fun parallelise(imageData: Filter, kernel: Kernel, f: (p : Pixel) -> Unit)
-}
-
-object GridParallelismStrategy : ParallelismStrategy{
-    override fun parallelise(image: Filter, kernel: Kernel, f: (p: Pixel) -> Unit) {
-        val kernelSize = kernel.size
-        val kernelOffset = kernelSize / 2
-
-        val executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
-
-
-        // Iterate through the image in blocks
-        for (blockY in 0 until height step blockSize) {
-            for (blockX in 0 until width step blockSize) {
-                executor.execute {
-                    val blockEndX = min(blockX + blockSize, width)
-                    val blockEndY = min(blockY + blockSize, height)
-
-                    for (y in blockY until blockEndY) {
-                        for (x in blockX until blockEndX) {
-                            var sumR = 0f
-                            var sumG = 0f
-                            var sumB = 0f
-
-                            // Apply Gaussian kernel to each pixel inside the block
-                            for (ky in 0 until kernelSize) {
-                                for (kx in 0 until kernelSize) {
-                                    val px = (x + kx - kernelOffset).coerceIn(0, width - 1)
-                                    val py = (y + ky - kernelOffset).coerceIn(0, height - 1)
-                                    val color = inputPixels[py * width + px]
-
-                                    val r = (color shr 16) and 0xFF
-                                    val g = (color shr 8) and 0xFF
-                                    val b = color and 0xFF
-
-                                    sumR += r * kernel[ky][kx]
-                                    sumG += g * kernel[ky][kx]
-                                    sumB += b * kernel[ky][kx]
-                                }
-                            }
-
-                            // Clamp values and store the new pixel
-                            val newR = sumR.toInt().coerceIn(0, 255)
-                            val newG = sumG.toInt().coerceIn(0, 255)
-                            val newB = sumB.toInt().coerceIn(0, 255)
-
-                            outputPixels[y * width + x] = (newR shl 16) or (newG shl 8) or newB
-                        }
-                    }
-                }
-            }
-        }
-
-        executor.shutdown()
-        while (!executor.isTerminated) {
-        }
-    }
-
-}
-
-interface Filter {
-    fun writeToFile()
-    fun applyKernel(kernel: Kernel, parallelMode: ParallelismStrategy)
-
-
-}
-
-open class Image(private val filename: String) : Filter {
-    private val image = ImageIO.read(File("assets/images/input/$filename")).toRGB()
-    private val width = image.width
-    private val height = image.height
-
-    override fun writeToFile() {
-        ImageIO.write(image, "bmp", File("assets/images/output/$filename"))
-    }
-
-    override fun applyKernel(kernel: Kernel, parallelismStrategy: ParallelismStrategy) {
-
-        val inputPixels = (image.raster.dataBuffer as DataBufferInt).data.clone()
-        val outputPixels = (image.raster.dataBuffer as DataBufferInt).data
-
-        parallelismStrategy.parallelise(outputPixels, kernel) { p ->
-
-        }
 
 
 
-        val imageOut = BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_RGB)
-        val imageOutData = (imageOut.raster.dataBuffer as DataBufferInt).data
-        System.arraycopy(outputPixels, 0, imageOutData, 0, outputPixels.size)
 
-        ImageIO.write(imageOut, "bmp", File("assets/images/output/$filename"))
-    }
-}
 
 fun main() {
 

@@ -3,8 +3,7 @@ package org.example.kernels
 import kotlin.math.PI
 import kotlin.math.exp
 
-class GaussianKernel(val kernelSize: Int) : Kernel {
-    private val sigma = kernelSize / 6f
+class GaussianKernel(private val kernelSize: Int, private val sigma: Float = kernelSize / 6f) : Kernel() {
     private fun generateGaussianKernel(size: Int, sigma: Float): Array<FloatArray> {
         require(size % 2 == 1) { "Kernel size must be odd" }
 
@@ -31,6 +30,5 @@ class GaussianKernel(val kernelSize: Int) : Kernel {
         return kernel
     }
 
-    override val kernel = generateGaussianKernel(kernelSize, sigma)
-
+    override val kernel: Array<FloatArray> = generateGaussianKernel(kernelSize, sigma)
 }

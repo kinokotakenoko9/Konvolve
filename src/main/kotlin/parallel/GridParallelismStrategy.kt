@@ -2,16 +2,17 @@ package org.example.parallelismStrategies
 
 import org.example.Filter
 import org.example.Pixel
+import org.example.image.ImageFilter
 import org.example.kernels.Kernel
 import java.util.concurrent.Executors
 
-class GridParallelismStrategy : ParallelismStrategy {
-    override fun parallelise(image: Filter, kernel: Kernel, f: (p: Pixel) -> Unit) {
+class GridParallelismStrategy(private val gridSize: Int) : ParallelismStrategy {
+    override fun parallelise(image: ImageFilter, kernel: Kernel, f: (p: Pixel) -> Unit) {
         val kernelSize = kernel.size
         val kernelOffset = kernelSize / 2
+        val blockSize = gridSize
 
         val executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
-
 
         // Iterate through the image in blocks
         for (blockY in 0 until height step blockSize) {

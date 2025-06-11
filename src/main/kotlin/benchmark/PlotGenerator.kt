@@ -52,10 +52,10 @@ fun plotBenchmark(file: File) {
 
         val p = ggplot(filteredData) +
                 geomTile {
-                    x = "Image"; y = "Mode"; fill = "Time"
+                    x = "Mode"; y = "Image"; fill = "Time"
                 } +
                 geomText {
-                    x = "Image"; y = "Mode"; label = "Time"
+                    x = "Mode"; y = "Image"; label = "Time"
                 } +
                 scaleFillGradientN(
                     colors = listOf("#baffc9", "#ffffba", "#ffdfba", "#ffb3ba")

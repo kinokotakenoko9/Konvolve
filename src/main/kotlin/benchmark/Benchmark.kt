@@ -6,8 +6,11 @@ import org.example.image.Image
 import org.example.kernels.GaussianKernel
 import org.example.kernels.Kernel
 import org.example.parallel.*
+import org.openjdk.jmh.annotations.Fork
 import org.openjdk.jmh.annotations.Scope
 
+@BenchmarkMode(Mode.SingleShotTime)
+@Fork(0)
 @State(Scope.Benchmark)
 open class Benchmark {
     private val numThreads = 4
@@ -16,16 +19,16 @@ open class Benchmark {
 
     @Param(
         "no parallel"
-//        , "column"
-//        , "row"
-//        , "pixel"
+        , "column"
+        , "row"
+        , "pixel"
         , "grid 32"
     )
     private lateinit var modeName: String
 
     @Param(
         "Gaussian 5"
-//        , "Gaussian 15"
+        , "Gaussian 15"
     )
     private lateinit var kernelName: String
 
@@ -63,47 +66,3 @@ open class Benchmark {
         img.applyKernel(kernel)
     }
 }
-//
-//fun getStatistic() {
-//    val k = GaussianKernel(5)
-//
-//    val modes = listOf(
-//        "no parallel" to NoParallelMode(),
-//        "column" to ColumnParallelMode(numThreads),
-//        "row" to RowParallelMode(numThreads),
-//        "pixel" to PixelParallelMode(numThreads),
-//        "grid 32" to GridParallelMode(numThreads, 32)
-//    )
-//
-//    val results = mutableListOf<Pair<String, Double>>() // (mode, ms)
-//
-//    for ((name, m) in modes) {
-//        img.resetData().setParallelMode(m)
-//        val duration = measureTime {
-//            img.applyKernel(k)
-//        }
-//        img.writeToFile(name)
-//        val ms = duration.inWholeMilliseconds.toDouble()
-//        results.add(name to ms)
-//    }
-//
-//    // Build plot data
-//    val data = mapOf(
-//        "mode" to results.map { it.first },
-//        "time_ms" to results.map { it.second }
-//    )
-//
-//    val plot = letsPlot(data) +
-//            geomBar(stat = Stat.identity) {
-//                x = "mode"
-//                y = "time_ms"
-//                fill = "mode"
-//            } +
-//            ggtitle("Image: ${img.name}") +
-//            ylab("ms") +
-//            xlab("mode") +
-//            ggsize(600, 400)
-//
-//    ggsave(plot, "benchmark_plot.png", dpi = 150, path = ".")
-//    println("Saved benchmark_plot.png")
-//}

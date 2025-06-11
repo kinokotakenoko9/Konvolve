@@ -7,8 +7,10 @@ import org.example.parallel.ParallelMode
 open class Image(
     private val filename: String,
 ) {
-    private val data = ImageData(filename)
+    private var data = ImageData(filename)
     private var _parallelMode: ParallelMode = NoParallelMode()
+
+    private var isFresh = true
 
     fun writeToFile(label: String): Image {
         data.writeToFile("$filename-$label")
@@ -22,6 +24,13 @@ open class Image(
 
     fun applyKernel(kernel: Kernel): Image {
         _parallelMode.run(data, kernel)
+        isFresh = false
+        return this
+    }
+
+    fun resetData(): Image {
+        if (isFresh) return this
+        data = ImageData(filename)
         return this
     }
 }

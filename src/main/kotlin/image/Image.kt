@@ -32,6 +32,7 @@ open class Image(
     fun resetData(): Image {
         if (isFresh) return this
         data = ImageData(filename)
+        isFresh = true
         return this
     }
 }

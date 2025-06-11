@@ -2,10 +2,7 @@ package org.example.benchmark
 
 import org.example.image.Image
 import org.example.kernels.GaussianKernel
-import org.example.parallel.ColumnParallelMode
-import org.example.parallel.GridParallelMode
-import org.example.parallel.NoParallelMode
-import org.example.parallel.RowParallelMode
+import org.example.parallel.*
 import org.jetbrains.letsPlot.Stat
 import org.jetbrains.letsPlot.export.ggsave
 import org.jetbrains.letsPlot.geom.geomBar
@@ -23,12 +20,13 @@ class Benchmark(
 
     fun getStatistic() {
         val k = GaussianKernel(5)
-
+        val numThreads = 4
         val modes = listOf(
             "no parallel" to NoParallelMode(),
-            "col" to ColumnParallelMode(Runtime.getRuntime().availableProcessors()),
-            "row" to RowParallelMode(Runtime.getRuntime().availableProcessors()),
-            "grid 32" to GridParallelMode(Runtime.getRuntime().availableProcessors(), 32)
+            "column" to ColumnParallelMode(numThreads),
+            "row" to RowParallelMode(numThreads),
+            "pixel" to PixelParallelMode(numThreads),
+            "grid 32" to GridParallelMode(numThreads, 32)
         )
 
         val results = mutableListOf<Pair<String, Double>>() // (mode, ms)
@@ -55,7 +53,7 @@ class Benchmark(
                     y = "time_ms"
                     fill = "mode"
                 } +
-                ggtitle("Benchmark: Convolution Time (ms)") +
+                ggtitle("Image: ${img.name}") +
                 ylab("ms") +
                 xlab("mode") +
                 ggsize(600, 400)

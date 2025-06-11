@@ -5,7 +5,7 @@ import org.example.image.Image
 
 fun main() {
 
-    val imgName = "cat"
+    val imgName = "flower"
     val im = Image(imgName)
     println("start")
     val b = Benchmark(im)

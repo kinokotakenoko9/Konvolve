@@ -11,6 +11,7 @@ open class Image(
     private var _parallelMode: ParallelMode = NoParallelMode()
 
     private var isFresh = true
+    val name = "$filename.bmp"
 
     fun writeToFile(label: String): Image {
         data.writeToFile("$filename-$label")

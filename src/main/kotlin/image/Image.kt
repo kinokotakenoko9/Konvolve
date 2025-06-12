@@ -36,4 +36,8 @@ open class Image(
         isFresh = true
         return this
     }
+
+    fun getPixelData(): IntArray {
+        return data.clonePixelData()
+    }
 }

@@ -24,9 +24,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
-
-    val mockkVersion = "1.14.2"
-    testImplementation("io.mockk:mockk:${mockkVersion}")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 }
 
 tasks.test {

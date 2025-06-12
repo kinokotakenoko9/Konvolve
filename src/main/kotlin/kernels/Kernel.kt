@@ -1,23 +1,15 @@
 package org.example.kernels
 
-import org.example.image.ImageData
-
 abstract class Kernel {
     abstract val kernel: Array<FloatArray>
 
-    val size
+    private val size
         get() = kernel.size
 
-    val offset
+    private val offset
         get() = size / 2
 
-    fun getCoeff(x: Int, y: Int): Float {
-        return kernel[y][x]
-    }
-
     fun applyKernelToPixel(srcPixelData: IntArray, destPixelData: IntArray, w: Int, h: Int, x: Int, y: Int) {
-        val inputPixels = srcPixelData // TODO: optimize, each call new array is created
-
         var sumR = 0f
         var sumG = 0f
         var sumB = 0f
@@ -26,7 +18,7 @@ abstract class Kernel {
             for (kx in 0 until size) {
                 val px = (x + kx - offset).coerceIn(0, w - 1)
                 val py = (y + ky - offset).coerceIn(0, h - 1)
-                val color = inputPixels[py * w + px]
+                val color = srcPixelData[py * w + px]
 
                 val r = (color shr 16) and 0xFF
                 val g = (color shr 8) and 0xFF

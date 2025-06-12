@@ -24,7 +24,6 @@ class ImageData(
     }
 
     fun writeToFile(filename: String) {
-        // TODO: think
         val imageOut = BufferedImage(img.width, img.height, BufferedImage.TYPE_INT_RGB)
         val imageOutData = (imageOut.raster.dataBuffer as DataBufferInt).data
         System.arraycopy(pixelData, 0, imageOutData, 0, pixelData.size)

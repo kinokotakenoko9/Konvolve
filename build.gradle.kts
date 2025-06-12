@@ -64,7 +64,15 @@ tasks.register<JavaExec>("benchmarkPlot") {
     group = "reporting"
     description = "Generates benchmark plot from the latest benchmark result."
 
-    mainClass.set("benchmark.PlotGeneratorKt")
+    mainClass.set("tasks.PlotGeneratorKt")
     classpath = sourceSets["main"].runtimeClasspath
     args(latestJson.absolutePath)
+}
+
+tasks.register<JavaExec>("generateFilteredImages") {
+    group = "image-processing"
+    description = "Applies all kernels to all images and saves the results."
+
+    mainClass.set("tasks.KernelImageGeneratorKt")
+    classpath = sourceSets["main"].runtimeClasspath
 }

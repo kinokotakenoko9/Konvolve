@@ -74,3 +74,15 @@ Benchmark configuration can be found in `build.gradle.kts` and `src/main/kotlin/
 ## Results 
 Performance details and comparisons are located in `assets/benchmarks`
 
+# Testing
+
+Run tests with 
+```
+./gradlew test
+```
+
+Additionally, preview images can be generated with 
+```
+./gradlew generateFilteredImages
+```
+for manual testing. Output location: `assets/images/output`

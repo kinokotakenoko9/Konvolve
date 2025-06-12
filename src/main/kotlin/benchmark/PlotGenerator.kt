@@ -1,4 +1,4 @@
-package org.example.benchmark
+package benchmark
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -62,7 +62,7 @@ fun plotBenchmark(file: File) {
                 ) +
                 labs(title = "Kernel: $kernel", fill = "Time (ms)")
 
-        ggsave(p, "graph[${kernel.toString().replace(" ", "_")}].png", dpi = 150, path = ".")
+        ggsave(p, "graph[${kernel.toString().replace(" ", "_")}].png", dpi = 150, path = "assets/benchmarks")
     }
 }
 

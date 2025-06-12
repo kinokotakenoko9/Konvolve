@@ -1,7 +1,7 @@
-package org.example.parallel
+package parallel
 
-import org.example.image.ImageData
-import org.example.kernels.Kernel
+import image.ImageData
+import kernels.Kernel
 import java.util.concurrent.Executors
 import kotlin.math.min
 

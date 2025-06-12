@@ -1,4 +1,4 @@
-package org.example.kernels
+package kernels
 
 import kotlin.math.PI
 import kotlin.math.exp

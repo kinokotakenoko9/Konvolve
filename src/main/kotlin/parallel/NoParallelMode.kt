@@ -1,7 +1,7 @@
-package org.example.parallel
+package parallel
 
-import org.example.image.ImageData
-import org.example.kernels.Kernel
+import image.ImageData
+import kernels.Kernel
 
 class NoParallelMode : ParallelMode {
     override fun run(img: ImageData, kernel: Kernel) {

@@ -1,4 +1,4 @@
-package org.example.kernels
+package kernels
 
 abstract class Kernel {
     abstract val kernel: Array<FloatArray>

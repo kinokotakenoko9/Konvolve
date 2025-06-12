@@ -1,13 +1,13 @@
-package org.example.benchmark
+package benchmark
 
+import image.Image
 import kotlinx.benchmark.*
 import kotlinx.benchmark.Benchmark
-import org.example.image.Image
-import org.example.kernels.GaussianKernel
-import org.example.kernels.Kernel
-import org.example.parallel.*
+import kernels.GaussianKernel
+import kernels.Kernel
 import org.openjdk.jmh.annotations.Fork
 import org.openjdk.jmh.annotations.Scope
+import parallel.*
 
 @BenchmarkMode(Mode.SingleShotTime)
 @Fork(0)
@@ -41,7 +41,7 @@ open class Benchmark {
 
     @Setup
     fun prepare() {
-        img = Image(imageName)
+        img = Image("assets/images/input", imageName)
 
         val mode = when (modeName) {
             "no parallel" -> NoParallelMode()

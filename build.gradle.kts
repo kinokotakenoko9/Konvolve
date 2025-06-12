@@ -4,8 +4,8 @@ plugins {
     kotlin("plugin.serialization") version "2.1.10"
 }
 
-group = "org.example"
-version = "1.0-SNAPSHOT"
+group = "konvolve"
+version = "0.0.1"
 
 repositories {
     mavenCentral()
@@ -52,7 +52,7 @@ benchmark {
 
 }
 
-tasks.register<JavaExec>("runPlot") {
+tasks.register<JavaExec>("benchmarkPlot") {
     val latestJson = file("build/reports/benchmarks/main")
         .walkTopDown()
         .filter { it.name == "main.json" }
@@ -62,7 +62,7 @@ tasks.register<JavaExec>("runPlot") {
     group = "reporting"
     description = "Generates benchmark plot from the latest benchmark result."
 
-    mainClass.set("org.example.benchmark.PlotGeneratorKt")
+    mainClass.set("benchmark.PlotGeneratorKt")
     classpath = sourceSets["main"].runtimeClasspath
     args(latestJson.absolutePath)
 }

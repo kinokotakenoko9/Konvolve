@@ -1,20 +1,21 @@
-package org.example.image
+package image
 
-import org.example.kernels.Kernel
-import org.example.parallel.NoParallelMode
-import org.example.parallel.ParallelMode
+import kernels.Kernel
+import parallel.NoParallelMode
+import parallel.ParallelMode
 
 open class Image(
-    private val filename: String,
+    private val dirName: String,
+    private val filename: String
 ) {
-    private var data = ImageData(filename)
+    private var data = ImageData(dirName, filename)
     private var _parallelMode: ParallelMode = NoParallelMode()
 
     private var isFresh = true
     val name = "$filename.bmp"
 
-    fun writeToFile(label: String): Image {
-        data.writeToFile("$filename-$label")
+    fun writeToFile(label: String, dirOut: String): Image {
+        data.writeToFile("$filename-$label", dirOut)
         return this
     }
 
@@ -31,7 +32,7 @@ open class Image(
 
     fun resetData(): Image {
         if (isFresh) return this
-        data = ImageData(filename)
+        data = ImageData(dirName, filename)
         isFresh = true
         return this
     }

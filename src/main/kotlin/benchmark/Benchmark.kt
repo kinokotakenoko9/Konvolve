@@ -17,10 +17,10 @@ open class Benchmark {
     private lateinit var kernel: Kernel
 
     @Param(
-//        "no parallel"
-         "column"
+        "no parallel"
+        , "column"
         , "row"
-//        , "pixel"
+        , "pixel"
         , "grid 32"
         , "grid 8"
     )
@@ -28,17 +28,17 @@ open class Benchmark {
 
     @Param(
         "Gaussian 5"
-        , "Gaussian 15"
-        , "Motion Blur 9 Diagonal-tl-br"
-        , "Find Edges 5 All-directions"
+//        , "Gaussian 15"
+//        , "Motion Blur 9 Diagonal-tl-br"
+//        , "Find Edges 5 All-directions"
         , "Identity 3"
     )
     private lateinit var kernelName: String
 
     @Param(
         "flower"
-        , "cat"
-        , "city"
+//        , "cat"
+//        , "city"
     )
     private lateinit var imageName: String
 

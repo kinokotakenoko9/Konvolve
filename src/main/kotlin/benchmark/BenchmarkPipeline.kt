@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(1)
 @State(Scope.Benchmark)
-class BenchmarkPipeline {
+open class BenchmarkPipeline {
     private val numThreads = 4
 
     @Param("1", "2", "4")

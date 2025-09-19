@@ -47,15 +47,11 @@ open class BenchmarkPipeline {
     private lateinit var pipeline: ImagePipeline
     private lateinit var kernel: Kernel
     private lateinit var mode: ParallelMode
-    private val inputDir = Paths.get("assets/images/input/dataset")
-    private val outputDir = Paths.get("assets/images/output/dataset")
+    private val inputDir = "assets/images/input/dataset"
+    private val outputDir = "assets/images/output/dataset"
 
     @Setup
     fun setup() {
-        if (!Files.exists(outputDir)) {
-            Files.createDirectories(outputDir)
-        }
-
         pipeline = ImagePipeline(
             imagesDirInput = inputDir,
             imagesDirOutput = outputDir,

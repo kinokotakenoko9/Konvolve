@@ -4,18 +4,35 @@ import kernels.Kernel
 import parallel.NoParallelMode
 import parallel.ParallelMode
 
-open class Image(
-    private val dirName: String,
+open class Image {
+    private val dirName: String
     private val filename: String
-) {
-    private var data = ImageData(dirName, filename)
+    private var data: ImageData?
     private var _parallelMode: ParallelMode = NoParallelMode()
-
+    val name: String
     private var isFresh = true
-    val name = "$filename.bmp"
+
+    constructor(dirName: String, filename: String) {
+        this.dirName = dirName
+        this.filename = filename
+        this.data = ImageData(dirName, filename)
+        this.name = "$filename.bmp"
+    }
+
+    private constructor() {
+        this.dirName = ""
+        this.filename = "POISON_PILL"
+        this.name = "POISON_PILL"
+        this.data = null
+        this.isFresh = false
+    }
+
+    companion object {
+        val POISON_PILL = Image()
+    }
 
     fun writeToFile(label: String, dirOut: String): Image {
-        data.writeToFile("$filename-$label", dirOut)
+        data?.writeToFile("$filename-$label", dirOut)
         return this
     }
 
@@ -25,7 +42,9 @@ open class Image(
     }
 
     fun applyKernel(kernel: Kernel): Image {
-        _parallelMode.run(data, kernel)
+        data?.let {
+            _parallelMode.run(it, kernel)
+        }
         isFresh = false
         return this
     }
@@ -37,7 +56,7 @@ open class Image(
         return this
     }
 
-    fun getPixelData(): IntArray {
-        return data.clonePixelData()
+    fun getPixelData(): IntArray? {
+        return data?.clonePixelData()
     }
 }

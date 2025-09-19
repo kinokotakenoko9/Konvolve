@@ -10,9 +10,14 @@ class ReaderTask(
 ) : Runnable {
 
     override fun run() {
-        println("Reader thread is reading image $filename...")
-        val image = Image(dirName, filename)
-        readQueue.put(image)
-        println("Reader placed image $filename in queue.")
+        try {
+            println("Reader thread is reading image $filename...")
+            val image = Image(dirName, filename)
+            readQueue.put(image)
+            println("Reader placed image $filename in queue.")
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt()
+            print("ReaderTask was interrupted.")
+        }
     }
 }

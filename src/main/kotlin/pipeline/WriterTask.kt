@@ -10,14 +10,19 @@ class WriterTask(
 ) : Runnable {
     override fun run() {
         try {
-            while (!Thread.currentThread().isInterrupted) {
-                val processedImage = writeQueue.take()
-                println("Writer thread is saving image ${processedImage.name}...")
-                processedImage.writeToFile(label, imageDirOut)
-                println("Writer finished saving image ${processedImage.name}.")
+            while (true) {
+                val image = writeQueue.take()
+
+                if (image === Image.POISON_PILL)
+                    break
+
+                println("Writer thread is saving image ${image.name}...")
+                image.writeToFile(label, imageDirOut)
+                println("Writer finished saving image ${image.name}.")
             }
         } catch (e: InterruptedException) {
             Thread.currentThread().interrupt()
+            println("WriterTask was interrupted.")
         }
     }
 

@@ -3,17 +3,15 @@ package pipeline
 import image.Image
 import kernels.Kernel
 import parallel.ParallelMode
-import java.nio.file.Path
+import java.io.File
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import kotlin.io.path.listDirectoryEntries
-import kotlin.io.path.name
 
 class ImagePipeline(
-    private val imagesDirInput: Path,
-    private val imagesDirOutput: Path,
+    private val imagesDirInput: String,
+    private val imagesDirOutput: String,
     readQueueSize: Int,
     writeQueueSize: Int,
     private val numReaderThreads: Int,
@@ -30,25 +28,35 @@ class ImagePipeline(
     fun start(kernel: Kernel, label: String, mode: ParallelMode) {
         println("Starting the image processing pipeline...")
 
-        // submit all reader tasks
-        val imagesDirectoryName = imagesDirInput.toAbsolutePath().toString()
-        val imagesToProcess = imagesDirInput.listDirectoryEntries().map { it.name }
+        val imagesDirectoryName = imagesDirInput
+        val imagesToProcess = File(imagesDirInput).listFiles()
+            ?.filter { it.isFile && it.name.endsWith(".bmp") }
+            ?.map { it.name.removeSuffix(".bmp") }
+            ?: emptyList()
+        println(imagesToProcess)
         for (imageFilename in imagesToProcess) {
             readerPool.submit(ReaderTask(imagesDirectoryName, imageFilename, readQueue))
         }
 
         repeat(numConvolutionThreads) { convolutionPool.submit(ConvolutionTask(readQueue, writeQueue, kernel, mode)) }
-        repeat(numWriterThreads) { writerPool.submit(WriterTask(writeQueue, label, imagesDirOutput.toAbsolutePath().toString())) }
+        repeat(numWriterThreads) { writerPool.submit(WriterTask(writeQueue, label, imagesDirOutput)) }
 
         readerPool.shutdown()
-        readerPool.awaitTermination(5, TimeUnit.MINUTES) // wait for all images to be read
+        readerPool.awaitTermination(5, TimeUnit.MINUTES)
 
-        while (readQueue.isNotEmpty() || writeQueue.isNotEmpty()) {
-            Thread.sleep(100)
+        repeat(numConvolutionThreads) {
+            readQueue.put(Image.POISON_PILL)
         }
 
-        convolutionPool.shutdownNow()
-        writerPool.shutdownNow()
+        convolutionPool.shutdown()
+        convolutionPool.awaitTermination(5, TimeUnit.MINUTES)
+
+        repeat(numWriterThreads) {
+            writeQueue.put(Image.POISON_PILL)
+        }
+
+        writerPool.shutdown()
+        writerPool.awaitTermination(5, TimeUnit.MINUTES)
 
         println("Image pipeline has finished.")
 

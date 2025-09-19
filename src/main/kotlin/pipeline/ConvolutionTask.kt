@@ -13,17 +13,22 @@ class ConvolutionTask(
     ) : Runnable {
     override fun run() {
         try {
-            while (!Thread.currentThread().isInterrupted) {
-                val rawImage = readQueue.take()
-                println("Convolution thread is processing image ${rawImage.name}...")
-                rawImage
+            while (true) {
+                val image = readQueue.take()
+
+                if (image === Image.POISON_PILL)
+                    break
+
+                println("Convolution thread is processing image ${image.name}...")
+                image
                     .setParallelMode(mode)
                     .applyKernel(kernel)
-                writeQueue.put(rawImage)
-                println("Convolution placed image ${rawImage.name} in write queue.")
+                writeQueue.put(image)
+                println("Convolution placed image ${image.name} in write queue.")
             }
         } catch (e: InterruptedException) {
             Thread.currentThread().interrupt()
+            println("ConvolutionTask was interrupted.")
         }
     }
 }

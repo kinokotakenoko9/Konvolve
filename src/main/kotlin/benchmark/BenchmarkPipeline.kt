@@ -16,16 +16,10 @@ import java.util.concurrent.TimeUnit
 @Fork(1)
 @State(Scope.Benchmark)
 open class BenchmarkPipeline {
-    private val numThreads = 4
-
-    @Param("1", "2", "4")
-    private var numReaderThreads: Int = 0
-
-    @Param("1", "2", "4", "8")
-    private var numConvolutionThreads: Int = 0
-
-    @Param("1", "2", "4")
-    private var numWriterThreads: Int = 0
+    private val numThreads = 8
+    private var numReaderThreads: Int = 4
+    private var numConvolutionThreads: Int = 8
+    private var numWriterThreads: Int = 4
 
     @Param(
         "no parallel"
@@ -39,8 +33,8 @@ open class BenchmarkPipeline {
     private lateinit var modeName: String
 
     @Param(
-        "Gaussian 3"
-//        , "Gaussian 9",  "Motion Blur 9 Diagonal-tl-br", "Find Edges 5 All-directions"
+        "Gaussian 9"
+//        , "Gaussian 3",  "Motion Blur 9 Diagonal-tl-br", "Find Edges 5 All-directions"
     )
     private lateinit var kernelName: String
 
@@ -52,16 +46,6 @@ open class BenchmarkPipeline {
 
     @Setup
     fun setup() {
-        pipeline = ImagePipeline(
-            imagesDirInput = inputDir,
-            imagesDirOutput = outputDir,
-            readQueueSize = 20,
-            writeQueueSize = 20,
-            numReaderThreads = numReaderThreads,
-            numConvolutionThreads = numConvolutionThreads,
-            numWriterThreads = numWriterThreads
-        )
-
         mode = when (modeName) {
             "no parallel" -> NoParallelMode()
             "column" -> ColumnParallelMode(numThreads)
@@ -84,7 +68,16 @@ open class BenchmarkPipeline {
 
     @Benchmark
     fun processImages() {
-        val label = "benchmark-${kernelName.replace(" ", "-")}-R$numReaderThreads-C$numConvolutionThreads-W$numWriterThreads"
+        pipeline = ImagePipeline(
+            imagesDirInput = inputDir,
+            imagesDirOutput = outputDir,
+            readQueueSize = 20,
+            writeQueueSize = 20,
+            numReaderThreads = numReaderThreads,
+            numConvolutionThreads = numConvolutionThreads,
+            numWriterThreads = numWriterThreads
+        )
+        val label = "benchmark-pipeline"
         pipeline.start(kernel, label, mode)
     }
 }

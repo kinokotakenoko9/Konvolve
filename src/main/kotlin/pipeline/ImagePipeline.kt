@@ -2,6 +2,7 @@ package pipeline
 
 import image.Image
 import kernels.Kernel
+import parallel.ParallelMode
 import java.nio.file.Path
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.BlockingQueue
@@ -26,7 +27,7 @@ class ImagePipeline(
     private val convolutionPool = Executors.newFixedThreadPool(numConvolutionThreads)
     private val writerPool = Executors.newFixedThreadPool(numWriterThreads)
 
-    fun start(kernel: Kernel, label: String) {
+    fun start(kernel: Kernel, label: String, mode: ParallelMode) {
         println("Starting the image processing pipeline...")
 
         // submit all reader tasks
@@ -36,18 +37,16 @@ class ImagePipeline(
             readerPool.submit(ReaderTask(imagesDirectoryName, imageFilename, readQueue))
         }
 
-        repeat(numConvolutionThreads) { convolutionPool.submit(ConvolutionTask(readQueue, writeQueue, kernel)) }
+        repeat(numConvolutionThreads) { convolutionPool.submit(ConvolutionTask(readQueue, writeQueue, kernel, mode)) }
         repeat(numWriterThreads) { writerPool.submit(WriterTask(writeQueue, label, imagesDirOutput.toAbsolutePath().toString())) }
 
         readerPool.shutdown()
         readerPool.awaitTermination(5, TimeUnit.MINUTES) // wait for all images to be read
 
-        // wait until all work is done
         while (readQueue.isNotEmpty() || writeQueue.isNotEmpty()) {
             Thread.sleep(100)
         }
 
-        // stop other pools after the work is done
         convolutionPool.shutdownNow()
         writerPool.shutdownNow()
 

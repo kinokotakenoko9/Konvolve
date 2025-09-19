@@ -21,23 +21,24 @@ open class Benchmark {
         , "column"
         , "row"
         , "pixel"
+        , "grid 16"
         , "grid 32"
-        , "grid 8"
+        , "grid 128"
     )
     private lateinit var modeName: String
 
     @Param(
-        "Gaussian 5"
-//        , "Gaussian 15"
-//        , "Motion Blur 9 Diagonal-tl-br"
-//        , "Find Edges 5 All-directions"
+        "Gaussian 3"
+        , "Gaussian 9"
+        , "Motion Blur 9 Diagonal-tl-br"
+        , "Find Edges 5 All-directions"
         , "Identity 3"
     )
     private lateinit var kernelName: String
 
     @Param(
         "flower"
-//        , "cat"
+        , "cat"
 //        , "city"
     )
     private lateinit var imageName: String
@@ -51,14 +52,15 @@ open class Benchmark {
             "column" -> ColumnParallelMode(numThreads)
             "row" -> RowParallelMode(numThreads)
             "pixel" -> PixelParallelMode(numThreads)
+            "grid 16" -> GridParallelMode(numThreads, 16)
             "grid 32" -> GridParallelMode(numThreads, 32)
-            "grid 8" -> GridParallelMode(numThreads, 8)
+            "grid 128" -> GridParallelMode(numThreads, 128)
             else -> error("Unknown mode: $modeName")
         }
 
         kernel = when (kernelName) {
-            "Gaussian 5" -> GaussianKernel(5)
-            "Gaussian 15" -> GaussianKernel(15)
+            "Gaussian 3" -> GaussianKernel(3)
+            "Gaussian 9" -> GaussianKernel(9)
             "Motion Blur 9 Diagonal-tl-br" -> MotionBlurKernel(9, MotionBlurDirection.DIAGONAL_TL_BR)
             "Find Edges 5 All-directions" -> FindEdgesKernel(5, EdgeDirection.ALL_DIRECTIONS)
             "Identity 3" -> IdentityKernel(3)

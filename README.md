@@ -106,7 +106,21 @@ On smaller images (flower.bmp), the overhead of thread management can diminish t
 - The asynchronous convolution benchmark demonstrates the pipeline's performance, 
 showing a clear and consistent speedup when processing a batch of images.
 
-# Testing
+# Examples
+- 15x15 Gaussian Filter
+- 15x15 Motion Blur Filter (top-left bottom-right)
+- 5x5 Find Edges Filter (all directions)
+<p align="center">
+  <img src="assets/images/output/cat-gk15.bmp" alt="cat.bmp" height="200"/>
+  <img src="assets/images/output/cat-mbk5.bmp" alt="cat.bmp" height="200"/>
+  <img src="assets/images/output/cat-fek15.bmp" alt="cat.bmp" height="200"/>
+</p>
+
+<p align="center">
+  <img src="assets/images/output/flower-gk15.bmp" alt="flower.bmp" height="200"/>
+  <img src="assets/images/output/flower-mbk5.bmp" alt="flower.bmp" height="200"/>
+  <img src="assets/images/output/flower-fek15.bmp" alt="flower.bmp" height="200"/>
+</p>
 
 Run tests with 
 ```

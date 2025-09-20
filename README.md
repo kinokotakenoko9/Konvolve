@@ -122,6 +122,8 @@ showing a clear and consistent speedup when processing a batch of images.
   <img src="assets/images/output/flower-fek15.bmp" alt="flower.bmp" height="200"/>
 </p>
 
+# Testing
+
 Run tests with 
 ```
 ./gradlew test

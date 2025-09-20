@@ -12,14 +12,13 @@ import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 
 @BenchmarkMode(Mode.SingleShotTime)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Fork(1)
+@Fork(0)
 @State(Scope.Benchmark)
 open class BenchmarkPipeline {
-    private val numThreads = 8
-    private var numReaderThreads: Int = 4
-    private var numConvolutionThreads: Int = 8
-    private var numWriterThreads: Int = 4
+    private val numThreads = 5
+    private var numReaderThreads: Int = 3
+    private var numConvolutionThreads: Int = 4
+    private var numWriterThreads: Int = 3
 
     @Param(
         "no parallel"

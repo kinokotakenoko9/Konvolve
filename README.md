@@ -46,10 +46,10 @@ Documentation is available in the Wiki
 # Build
 Clone this repository
 ```
-git clone git@github.com:kinokotakenoko9/Parallel-image-filtering.git
+git clone git@github.com:kinokotakenoko9/Konvolve.git
 ```
 ```
-cd Parallel-image-filtering
+cd Konvolve
 ```
 Build the library with
 ```
@@ -73,33 +73,19 @@ Benchmark configuration can be found in `build.gradle.kts` and `src/main/kotlin/
 
 ## Results 
 
-asynchronous convolution of images on the [dataset](https://data.mendeley.com/datasets/sp4g8h7v8k/1) with Gaussian 3x3 kernel.
-```
-main summary:
-Benchmark                        (kernelName)   (modeName)  Mode  Cnt     Score   Error  Units
-BenchmarkPipeline.processImages    Gaussian 3  no parallel  avgt       1749.699          ms/op
-BenchmarkPipeline.processImages    Gaussian 3       column  avgt       2341.896          ms/op
-BenchmarkPipeline.processImages    Gaussian 3          row  avgt       2203.797          ms/op
-BenchmarkPipeline.processImages    Gaussian 3        pixel  avgt       6562.766          ms/op
-BenchmarkPipeline.processImages    Gaussian 3      grid 16  avgt       2208.743          ms/op
-BenchmarkPipeline.processImages    Gaussian 3      grid 32  avgt       1962.827          ms/op
-BenchmarkPipeline.processImages    Gaussian 3     grid 128  avgt       2117.524          ms/op
-```
-
-or 
+Asynchronous convolution of images on the [dataset](https://data.mendeley.com/datasets/sp4g8h7v8k/1) with Gaussian 3x3 kernel.
 
 ```
 main summary:
 Benchmark                        (kernelName)   (modeName)  Mode  Cnt      Score   Error  Units
-BenchmarkPipeline.processImages    Gaussian 9  no parallel  avgt        7073.196          ms/op
-BenchmarkPipeline.processImages    Gaussian 9       column  avgt        7939.791          ms/op
-BenchmarkPipeline.processImages    Gaussian 9          row  avgt        7798.996          ms/op
-BenchmarkPipeline.processImages    Gaussian 9        pixel  avgt       14800.969          ms/op
-BenchmarkPipeline.processImages    Gaussian 9      grid 16  avgt        9264.687          ms/op
-BenchmarkPipeline.processImages    Gaussian 9      grid 32  avgt        7659.843          ms/op
-BenchmarkPipeline.processImages    Gaussian 9     grid 128  avgt        7890.941          ms/op
+BenchmarkPipeline.processImages    Gaussian 9  no parallel  avgt       10524.517          ms/op
+BenchmarkPipeline.processImages    Gaussian 9       column  avgt        7806.752          ms/op
+BenchmarkPipeline.processImages    Gaussian 9          row  avgt        7716.154          ms/op
+BenchmarkPipeline.processImages    Gaussian 9        pixel  avgt       19927.265          ms/op
+BenchmarkPipeline.processImages    Gaussian 9      grid 16  avgt        7865.259          ms/op
+BenchmarkPipeline.processImages    Gaussian 9      grid 32  avgt        7752.672          ms/op
+BenchmarkPipeline.processImages    Gaussian 9     grid 128  avgt        7637.647          ms/op
 ```
-
 
 # Testing
 

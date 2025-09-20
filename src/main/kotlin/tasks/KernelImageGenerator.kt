@@ -25,8 +25,8 @@ fun main() {
         ),
         arrayOf(
             Image("assets/images/input", "flower"),
-            Image("assets/images/input", "cat"),
-            Image("assets/images/input", "city")
+            Image("assets/images/input", "cat")
+//            Image("assets/images/input", "city")
         )
     )
 }

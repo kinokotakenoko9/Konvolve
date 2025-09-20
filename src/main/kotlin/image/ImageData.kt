@@ -1,4 +1,4 @@
-package org.example.image
+package image
 
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferInt
@@ -6,9 +6,10 @@ import java.io.File
 import javax.imageio.ImageIO
 
 class ImageData(
-    filename: String,
+    dirName: String,
+    filename: String
 ) {
-    private val img: BufferedImage = ImageIO.read(File("assets/images/input/$filename.bmp")).toRGB()
+    private val img: BufferedImage = ImageIO.read(File("$dirName/$filename.bmp")).toRGB()
 
     val width
         get() = img.width
@@ -23,13 +24,12 @@ class ImageData(
         return (img.raster.dataBuffer as DataBufferInt).data.clone()
     }
 
-    fun writeToFile(filename: String) {
-        // TODO: think
+    fun writeToFile(filename: String, dirOut: String) {
         val imageOut = BufferedImage(img.width, img.height, BufferedImage.TYPE_INT_RGB)
         val imageOutData = (imageOut.raster.dataBuffer as DataBufferInt).data
         System.arraycopy(pixelData, 0, imageOutData, 0, pixelData.size)
 
-        ImageIO.write(imageOut, "bmp", File("assets/images/output/$filename.bmp"))
+        ImageIO.write(imageOut, "bmp", File("$dirOut/$filename.bmp"))
     }
 }
 

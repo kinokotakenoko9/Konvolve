@@ -1,7 +1,7 @@
-package org.example.parallel
+package parallel
 
-import org.example.image.ImageData
-import org.example.kernels.Kernel
+import image.ImageData
+import kernels.Kernel
 import java.util.concurrent.Executors
 import kotlin.math.min
 
@@ -9,6 +9,9 @@ class GridParallelMode(
     private val threadNumber: Int, private val blockSize: Int
 ) : ParallelMode {
     override fun run(img: ImageData, kernel: Kernel) {
+        val src = img.clonePixelData()
+        val dest = img.pixelData
+
         val executor = Executors.newFixedThreadPool(threadNumber)
 
         for (yStart in 0 until img.height step blockSize) {
@@ -19,7 +22,7 @@ class GridParallelMode(
 
                     for (y in yStart until yEnd) {
                         for (x in xStart until xEnd) {
-                            kernel.applyKernelToPixel(img, x, y)
+                            kernel.applyKernelToPixel(src, dest, img.width, img.height, x, y)
                         }
                     }
                 }

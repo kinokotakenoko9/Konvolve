@@ -40,9 +40,6 @@ fun main() {
 ```
 See `src/main/kotlin/demo` for more example usage
 
-## Api
-Documentation is available in the Wiki
-
 # Build
 Clone this repository
 ```
@@ -71,21 +68,43 @@ the compiled `.jar` will be located at: `build/libs/konvolve-1.0.0.jar`
 ## Configuration
 Benchmark configuration can be found in `build.gradle.kts` and `src/main/kotlin/benchmark/Benchmark.kt`
 
-## Results 
+## Experiments  
 
-Asynchronous convolution of images on the [dataset](https://data.mendeley.com/datasets/sp4g8h7v8k/1) with Gaussian 3x3 kernel.
+Test environment:
+* **OS:** Ubuntu 24.04.3 LTS x86_64
+* **CPU:** AMD Ryzen 7 7700 (16) @ 5.392GHz
+* **RAM:** 31167MiB
 
-```
-main summary:
-Benchmark                        (kernelName)   (modeName)  Mode  Cnt      Score   Error  Units
-BenchmarkPipeline.processImages    Gaussian 9  no parallel  avgt       10524.517          ms/op
-BenchmarkPipeline.processImages    Gaussian 9       column  avgt        7806.752          ms/op
-BenchmarkPipeline.processImages    Gaussian 9          row  avgt        7716.154          ms/op
-BenchmarkPipeline.processImages    Gaussian 9        pixel  avgt       19927.265          ms/op
-BenchmarkPipeline.processImages    Gaussian 9      grid 16  avgt        7865.259          ms/op
-BenchmarkPipeline.processImages    Gaussian 9      grid 32  avgt        7752.672          ms/op
-BenchmarkPipeline.processImages    Gaussian 9     grid 128  avgt        7637.647          ms/op
-```
+### Single Image
+
+Benchmarks of different parallel strategies were collected using `kotlinx-benchmark` with 1 warmup on two test images: `flower.bmp` (320x240 px) and `cat.bmp` (1024x1024 px). 
+
+<p align="center">
+  <img src="assets/images/input/cat.bmp" alt="cat.bmp" height="200"/>
+  <img src="assets/images/input/flower.bmp" alt="flower.bmp" height="200"/>
+</p>
+
+Results are shown on the heatmaps below.
+![graph-cat](assets/benchmarks/graph%5Bcat%5D.png)
+![graph-flower](assets/benchmarks/graph%5Bflower%5D.png)
+
+### Asynchronous Convolution
+
+Asynchronous convolution of images was tested on the [sp4g8h7v8k-1 dataset](https://data.mendeley.com/datasets/sp4g8h7v8k/1) with 9x9 Gaussian kernel.
+
+![graph-dataset](assets/benchmarks/graph%5Bdataset%5D.png)
+
+### Benchmark Analysis
+
+The benchmarks evaluate two key aspects of the library: 
+the performance of parallel strategies on individual images and the throughput of the asynchronous pipeline on a full dataset.
+
+- For single-image convolution, 
+the results highlight that the performance gain from parallelism is most significant on larger images (e.g., cat.bmp) with computationally intensive kernels. 
+On smaller images (flower.bmp), the overhead of thread management can diminish the returns.
+
+- The asynchronous convolution benchmark demonstrates the pipeline's performance, 
+showing a clear and consistent speedup when processing a batch of images.
 
 # Testing
 

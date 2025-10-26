@@ -6,9 +6,13 @@ import java.util.concurrent.Executors
 import kotlin.math.min
 
 class GridParallelMode(
-    private val threadNumber: Int, private val blockSize: Int
+    private val threadNumber: Int,
+    private val blockSize: Int,
 ) : ParallelMode {
-    override fun run(img: ImageData, kernel: Kernel) {
+    override fun run(
+        img: ImageData,
+        kernel: Kernel,
+    ) {
         val src = img.clonePixelData()
         val dest = img.pixelData
 

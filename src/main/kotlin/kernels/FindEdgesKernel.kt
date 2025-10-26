@@ -6,10 +6,13 @@ import kotlin.math.abs
 enum class EdgeDirection {
     HORIZONTAL_EDGE,
     VERTICAL_EDGE,
-    ALL_DIRECTIONS
+    ALL_DIRECTIONS,
 }
 
-class FindEdgesKernel(private val kernelSize: Int, private val direction: EdgeDirection) : Kernel() {
+class FindEdgesKernel(
+    private val kernelSize: Int,
+    private val direction: EdgeDirection,
+) : Kernel() {
     init {
         require(kernelSize > 0) { "Kernel size must be positive." }
         require(kernelSize >= 3) { "Kernel size must be at least 3 for this edge detection pattern." }
@@ -23,14 +26,14 @@ class FindEdgesKernel(private val kernelSize: Int, private val direction: EdgeDi
             EdgeDirection.HORIZONTAL_EDGE -> {
                 val centerCol = kernelSize / 2
                 for (i in 0 until kernelSize) {
-                    kernelMatrix[i][centerCol] = (-abs(i+1 - centerCol)).toFloat()
+                    kernelMatrix[i][centerCol] = (-abs(i + 1 - centerCol)).toFloat()
                 }
                 kernelMatrix[centerCol][centerCol] = -kernelMatrix.sumOf { row -> row.sum().toDouble() }.toFloat()
             }
             EdgeDirection.VERTICAL_EDGE -> {
                 val centerRow = kernelSize / 2
                 for (i in 0 until kernelSize) {
-                    kernelMatrix[centerRow][i] = (-abs(i+1 - centerRow)).toFloat()
+                    kernelMatrix[centerRow][i] = (-abs(i + 1 - centerRow)).toFloat()
                 }
                 kernelMatrix[centerRow][centerRow] = -kernelMatrix.sumOf { row -> row.sum().toDouble() }.toFloat()
             }

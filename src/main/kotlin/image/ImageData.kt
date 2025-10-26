@@ -7,7 +7,7 @@ import javax.imageio.ImageIO
 
 class ImageData(
     dirName: String,
-    filename: String
+    filename: String,
 ) {
     private val img: BufferedImage = ImageIO.read(File("$dirName/$filename.bmp")).toRGB()
 
@@ -20,11 +20,12 @@ class ImageData(
     val pixelData: IntArray
         get() = _pixelData
 
-    fun clonePixelData(): IntArray {
-        return (img.raster.dataBuffer as DataBufferInt).data.clone()
-    }
+    fun clonePixelData(): IntArray = (img.raster.dataBuffer as DataBufferInt).data.clone()
 
-    fun writeToFile(filename: String, dirOut: String) {
+    fun writeToFile(
+        filename: String,
+        dirOut: String,
+    ) {
         val imageOut = BufferedImage(img.width, img.height, BufferedImage.TYPE_INT_RGB)
         val imageOutData = (imageOut.raster.dataBuffer as DataBufferInt).data
         System.arraycopy(pixelData, 0, imageOutData, 0, pixelData.size)
@@ -39,4 +40,3 @@ fun BufferedImage.toRGB(): BufferedImage {
         createGraphics().drawImage(this@toRGB, 0, 0, null)
     }
 }
-

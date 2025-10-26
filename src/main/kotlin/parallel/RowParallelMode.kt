@@ -4,8 +4,13 @@ import image.ImageData
 import kernels.Kernel
 import java.util.concurrent.Executors
 
-class RowParallelMode(private val threadNumber: Int) : ParallelMode {
-    override fun run(img: ImageData, kernel: Kernel) {
+class RowParallelMode(
+    private val threadNumber: Int,
+) : ParallelMode {
+    override fun run(
+        img: ImageData,
+        kernel: Kernel,
+    ) {
         val src = img.clonePixelData()
         val dest = img.pixelData
 

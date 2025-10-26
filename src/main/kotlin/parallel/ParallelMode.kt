@@ -4,5 +4,8 @@ import image.ImageData
 import kernels.Kernel
 
 interface ParallelMode {
-    fun run(img: ImageData, kernel: Kernel)
+    fun run(
+        img: ImageData,
+        kernel: Kernel,
+    )
 }

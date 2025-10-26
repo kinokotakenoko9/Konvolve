@@ -9,7 +9,14 @@ abstract class Kernel {
     private val offset
         get() = size / 2
 
-    fun applyKernelToPixel(srcPixelData: IntArray, destPixelData: IntArray, w: Int, h: Int, x: Int, y: Int) {
+    fun applyKernelToPixel(
+        srcPixelData: IntArray,
+        destPixelData: IntArray,
+        w: Int,
+        h: Int,
+        x: Int,
+        y: Int,
+    ) {
         var sumR = 0f
         var sumG = 0f
         var sumB = 0f

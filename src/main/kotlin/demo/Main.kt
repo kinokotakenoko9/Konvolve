@@ -4,8 +4,6 @@ import image.Image
 import kernels.GaussianKernel
 import parallel.GridParallelMode
 import pipeline.ImagePipeline
-import java.nio.file.Files
-import java.nio.file.Paths
 import kotlin.time.measureTime
 
 fun main() {
@@ -13,12 +11,14 @@ fun main() {
 }
 
 fun demo1() {
-    val img = Image("assets/images/input", "flower")
-        .setParallelMode(GridParallelMode(4, 32))
+    val img =
+        Image("assets/images/input", "flower")
+            .setParallelMode(GridParallelMode(4, 32))
     val gk5 = GaussianKernel(5)
-    val d = measureTime {
-        img.applyKernel(gk5)
-    }
+    val d =
+        measureTime {
+            img.applyKernel(gk5)
+        }
     img.writeToFile("gs5-grid32", "assets/images/output")
 
     println(d)
@@ -36,24 +36,24 @@ fun demo2() {
     val numConvolutionThreads = 4
     val numWriterThreads = 2
 
-    val pipeline = ImagePipeline(
-        imagesDirInput = inputDir,
-        imagesDirOutput = outputDir,
-        readQueueSize = readQueueSize,
-        writeQueueSize = writeQueueSize,
-        numReaderThreads = numReaderThreads,
-        numConvolutionThreads = numConvolutionThreads,
-        numWriterThreads = numWriterThreads
-    )
+    val pipeline =
+        ImagePipeline(
+            imagesDirInput = inputDir,
+            imagesDirOutput = outputDir,
+            readQueueSize = readQueueSize,
+            writeQueueSize = writeQueueSize,
+            numReaderThreads = numReaderThreads,
+            numConvolutionThreads = numConvolutionThreads,
+            numWriterThreads = numWriterThreads,
+        )
 
     val kernel = GaussianKernel(5)
     val label = "gaussian-5-pipeline"
 
-    val d = measureTime {
-        pipeline.start(kernel, label, GridParallelMode(threadNumber = 4, blockSize = 32))
-    }
+    val d =
+        measureTime {
+            pipeline.start(kernel, label, GridParallelMode(threadNumber = 4, blockSize = 32))
+        }
 
     println(d)
 }
-
-

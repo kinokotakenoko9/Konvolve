@@ -31,7 +31,10 @@ open class Image {
         val POISON_PILL = Image()
     }
 
-    fun writeToFile(label: String, dirOut: String): Image {
+    fun writeToFile(
+        label: String,
+        dirOut: String,
+    ): Image {
         data?.writeToFile("$filename-$label", dirOut)
         return this
     }
@@ -56,7 +59,5 @@ open class Image {
         return this
     }
 
-    fun getPixelData(): IntArray? {
-        return data?.clonePixelData()
-    }
+    fun getPixelData(): IntArray? = data?.clonePixelData()
 }

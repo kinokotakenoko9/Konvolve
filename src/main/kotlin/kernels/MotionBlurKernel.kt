@@ -4,10 +4,13 @@ enum class MotionBlurDirection {
     HORIZONTAL,
     VERTICAL,
     DIAGONAL_TL_BR, // top-left to bottom-right
-    DIAGONAL_TR_BL  // top-right to bottom-left
+    DIAGONAL_TR_BL, // top-right to bottom-left
 }
 
-class MotionBlurKernel(private val kernelSize: Int, private val direction: MotionBlurDirection) : Kernel() {
+class MotionBlurKernel(
+    private val kernelSize: Int,
+    private val direction: MotionBlurDirection,
+) : Kernel() {
     init {
         require(kernelSize % 2 == 1) { "Kernel size must be odd." }
         require(kernelSize > 0) { "Kernel size must be positive." }

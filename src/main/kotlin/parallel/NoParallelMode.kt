@@ -4,7 +4,10 @@ import image.ImageData
 import kernels.Kernel
 
 class NoParallelMode : ParallelMode {
-    override fun run(img: ImageData, kernel: Kernel) {
+    override fun run(
+        img: ImageData,
+        kernel: Kernel,
+    ) {
         val src = img.clonePixelData()
         val dest = img.pixelData
 
@@ -14,5 +17,4 @@ class NoParallelMode : ParallelMode {
             }
         }
     }
-
 }

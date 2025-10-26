@@ -9,15 +9,16 @@ class ConvolutionTask(
     private val readQueue: BlockingQueue<Image>,
     private val writeQueue: BlockingQueue<Image>,
     private val kernel: Kernel,
-    private val mode: ParallelMode
-    ) : Runnable {
+    private val mode: ParallelMode,
+) : Runnable {
     override fun run() {
         try {
             while (true) {
                 val image = readQueue.take()
 
-                if (image === Image.POISON_PILL)
+                if (image === Image.POISON_PILL) {
                     break
+                }
 
                 println("Convolution thread is processing image ${image.name}...")
                 image

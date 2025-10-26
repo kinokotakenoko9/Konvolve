@@ -2,10 +2,9 @@ package parallel
 
 import image.Image
 import kernels.GaussianKernel
-import org.junit.jupiter.api.Test
-
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.awt.image.BufferedImage
 import java.io.File
@@ -48,9 +47,10 @@ class NoParallelModeTest {
     fun `GaussianKernel on single pixel image should produce expected diffusion`() {
         val kernel = GaussianKernel(3)
 
-        val imageInstance = Image(inputImageDir.absolutePath, testImageFilename)
-            .setParallelMode(NoParallelMode())
-            .applyKernel(kernel)
+        val imageInstance =
+            Image(inputImageDir.absolutePath, testImageFilename)
+                .setParallelMode(NoParallelMode())
+                .applyKernel(kernel)
 
         val actualPixelData = imageInstance.getPixelData()
 
@@ -77,7 +77,7 @@ class NoParallelModeTest {
         assertArrayEquals(
             expectedPixelData,
             actualPixelData,
-            "The Gaussian kernel applied to a single pixel image should produce the expected diffused values."
+            "The Gaussian kernel applied to a single pixel image should produce the expected diffused values.",
         )
     }
 }

@@ -8,7 +8,6 @@ class ReaderTask(
     private val filename: String,
     private val readQueue: BlockingQueue<Image>,
 ) : Runnable {
-
     override fun run() {
         try {
             println("Reader thread is reading image $filename...")

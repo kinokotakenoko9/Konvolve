@@ -3,12 +3,19 @@ package kernels
 import kotlin.math.PI
 import kotlin.math.exp
 
-class GaussianKernel(private val kernelSize: Int, sigma: Float = kernelSize / 6f) : Kernel() {
+class GaussianKernel(
+    private val kernelSize: Int,
+    sigma: Float = kernelSize / 6f,
+) : Kernel() {
     init {
         require(kernelSize % 2 == 1) { "Kernel size must be odd." }
         require(kernelSize > 0) { "Kernel size must be positive." }
     }
-    private fun generateGaussianKernel(size: Int, sigma: Float): Array<FloatArray> {
+
+    private fun generateGaussianKernel(
+        size: Int,
+        sigma: Float,
+    ): Array<FloatArray> {
         val kernel = Array(size) { FloatArray(size) }
         val mean = size / 2
         var sum = 0f

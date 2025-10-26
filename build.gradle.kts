@@ -2,6 +2,8 @@ plugins {
     kotlin("jvm") version "2.1.10"
     id("org.jetbrains.kotlinx.benchmark") version "0.4.14"
     kotlin("plugin.serialization") version "2.1.10"
+
+    id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
 }
 
 group = "konvolve"
@@ -51,15 +53,15 @@ benchmark {
             reportFormat = "json"
         }
     }
-
 }
 
 tasks.register<JavaExec>("benchmarkPlot") {
-    val latestJson = file("build/reports/benchmarks/main")
-        .walkTopDown()
-        .filter { it.name == "main.json" }
-        .maxByOrNull { it.lastModified() }
-        ?: throw GradleException("No benchmark JSON file found.")
+    val latestJson =
+        file("build/reports/benchmarks/main")
+            .walkTopDown()
+            .filter { it.name == "main.json" }
+            .maxByOrNull { it.lastModified() }
+            ?: throw GradleException("No benchmark JSON file found.")
 
     group = "reporting"
     description = "Generates benchmark plot from the latest benchmark result."

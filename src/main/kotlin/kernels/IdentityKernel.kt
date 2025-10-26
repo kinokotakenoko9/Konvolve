@@ -1,10 +1,13 @@
 package kernels
 
-class IdentityKernel(private val kernelSize: Int) : Kernel() {
+class IdentityKernel(
+    private val kernelSize: Int,
+) : Kernel() {
     init {
         require(kernelSize % 2 == 1) { "Kernel size must be odd." }
         require(kernelSize > 0) { "Kernel size must be positive." }
     }
+
     private fun generateIdentiKernel(size: Int): Array<FloatArray> {
         val kernel = Array(size) { FloatArray(size) }
 

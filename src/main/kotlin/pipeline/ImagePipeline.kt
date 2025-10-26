@@ -16,7 +16,7 @@ class ImagePipeline(
     writeQueueSize: Int,
     private val numReaderThreads: Int,
     private val numConvolutionThreads: Int,
-    private val numWriterThreads: Int
+    private val numWriterThreads: Int,
 ) {
     private val readQueue: BlockingQueue<Image> = ArrayBlockingQueue(readQueueSize)
     private val writeQueue: BlockingQueue<Image> = ArrayBlockingQueue(writeQueueSize)
@@ -25,14 +25,20 @@ class ImagePipeline(
     private val convolutionPool = Executors.newFixedThreadPool(numConvolutionThreads)
     private val writerPool = Executors.newFixedThreadPool(numWriterThreads)
 
-    fun start(kernel: Kernel, label: String, mode: ParallelMode) {
+    fun start(
+        kernel: Kernel,
+        label: String,
+        mode: ParallelMode,
+    ) {
         println("Starting the image processing pipeline...")
 
         val imagesDirectoryName = imagesDirInput
-        val imagesToProcess = File(imagesDirInput).listFiles()
-            ?.filter { it.isFile && it.name.endsWith(".bmp") }
-            ?.map { it.name.removeSuffix(".bmp") }
-            ?: emptyList()
+        val imagesToProcess =
+            File(imagesDirInput)
+                .listFiles()
+                ?.filter { it.isFile && it.name.endsWith(".bmp") }
+                ?.map { it.name.removeSuffix(".bmp") }
+                ?: emptyList()
         println(imagesToProcess)
         for (imageFilename in imagesToProcess) {
             readerPool.submit(ReaderTask(imagesDirectoryName, imageFilename, readQueue))
@@ -59,7 +65,5 @@ class ImagePipeline(
         writerPool.awaitTermination(5, TimeUnit.MINUTES)
 
         println("Image pipeline has finished.")
-
     }
-
 }

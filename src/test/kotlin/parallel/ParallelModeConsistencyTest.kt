@@ -43,13 +43,15 @@ class ParallelModeConsistencyTest {
     fun `GridParallelMode should produce the same image as NoParallelMode`() {
         val kernel = GaussianKernel(3)
 
-        val imageInstance = Image(inputImageDir.absolutePath, testImageFilename)
-            .setParallelMode(NoParallelMode())
-            .applyKernel(kernel)
+        val imageInstance =
+            Image(inputImageDir.absolutePath, testImageFilename)
+                .setParallelMode(NoParallelMode())
+                .applyKernel(kernel)
 
         val pixelDataNoParallel = imageInstance.getPixelData()
 
-        imageInstance.resetData()
+        imageInstance
+            .resetData()
             .setParallelMode(GridParallelMode(threadNumber = 2, blockSize = 32))
             .applyKernel(kernel)
 
@@ -58,7 +60,7 @@ class ParallelModeConsistencyTest {
         assertArrayEquals(
             pixelDataNoParallel,
             pixelDataGridParallel,
-            "The pixel data from GridParallelMode should be identical to NoParallelMode"
+            "The pixel data from GridParallelMode should be identical to NoParallelMode",
         )
     }
 
@@ -66,13 +68,15 @@ class ParallelModeConsistencyTest {
     fun `ColumnParallelMode should produce the same image as NoParallelMode`() {
         val kernel = GaussianKernel(3)
 
-        val imageInstance = Image(inputImageDir.absolutePath, testImageFilename)
-            .setParallelMode(NoParallelMode())
-            .applyKernel(kernel)
+        val imageInstance =
+            Image(inputImageDir.absolutePath, testImageFilename)
+                .setParallelMode(NoParallelMode())
+                .applyKernel(kernel)
 
         val pixelDataNoParallel = imageInstance.getPixelData()
 
-        imageInstance.resetData()
+        imageInstance
+            .resetData()
             .setParallelMode(ColumnParallelMode(threadNumber = 2))
             .applyKernel(kernel)
 
@@ -81,7 +85,7 @@ class ParallelModeConsistencyTest {
         assertArrayEquals(
             pixelDataNoParallel,
             pixelDataGridParallel,
-            "The pixel data from ColumnParallelMode should be identical to NoParallelMode"
+            "The pixel data from ColumnParallelMode should be identical to NoParallelMode",
         )
     }
 
@@ -89,13 +93,15 @@ class ParallelModeConsistencyTest {
     fun `RowParallelMode should produce the same image as NoParallelMode`() {
         val kernel = GaussianKernel(3)
 
-        val imageInstance = Image(inputImageDir.absolutePath, testImageFilename)
-            .setParallelMode(NoParallelMode())
-            .applyKernel(kernel)
+        val imageInstance =
+            Image(inputImageDir.absolutePath, testImageFilename)
+                .setParallelMode(NoParallelMode())
+                .applyKernel(kernel)
 
         val pixelDataNoParallel = imageInstance.getPixelData()
 
-        imageInstance.resetData()
+        imageInstance
+            .resetData()
             .setParallelMode(RowParallelMode(threadNumber = 2))
             .applyKernel(kernel)
 
@@ -104,7 +110,7 @@ class ParallelModeConsistencyTest {
         assertArrayEquals(
             pixelDataNoParallel,
             pixelDataGridParallel,
-            "The pixel data from RowParallelMode should be identical to NoParallelMode"
+            "The pixel data from RowParallelMode should be identical to NoParallelMode",
         )
     }
 
@@ -112,13 +118,15 @@ class ParallelModeConsistencyTest {
     fun `PixelParallelMode should produce the same image as NoParallelMode`() {
         val kernel = GaussianKernel(3)
 
-        val imageInstance = Image(inputImageDir.absolutePath, testImageFilename)
-            .setParallelMode(NoParallelMode())
-            .applyKernel(kernel)
+        val imageInstance =
+            Image(inputImageDir.absolutePath, testImageFilename)
+                .setParallelMode(NoParallelMode())
+                .applyKernel(kernel)
 
         val pixelDataNoParallel = imageInstance.getPixelData()
 
-        imageInstance.resetData()
+        imageInstance
+            .resetData()
             .setParallelMode(PixelParallelMode(threadNumber = 2))
             .applyKernel(kernel)
 
@@ -127,7 +135,7 @@ class ParallelModeConsistencyTest {
         assertArrayEquals(
             pixelDataNoParallel,
             pixelDataGridParallel,
-            "The pixel data from PixelParallelMode should be identical to NoParallelMode"
+            "The pixel data from PixelParallelMode should be identical to NoParallelMode",
         )
     }
 }

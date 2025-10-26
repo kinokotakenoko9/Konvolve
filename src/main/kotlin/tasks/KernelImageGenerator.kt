@@ -4,7 +4,10 @@ import image.Image
 import kernels.*
 import parallel.GridParallelMode
 
-fun applyKernels(kernels: Array<Pair<String, Kernel>>, images: Array<Image>) {
+fun applyKernels(
+    kernels: Array<Pair<String, Kernel>>,
+    images: Array<Image>,
+) {
     images.forEach { img ->
         kernels.forEach { (name, kernel) ->
             img
@@ -25,8 +28,8 @@ fun main() {
         ),
         arrayOf(
             Image("assets/images/input", "flower"),
-            Image("assets/images/input", "cat")
+            Image("assets/images/input", "cat"),
 //            Image("assets/images/input", "city")
-        )
+        ),
     )
 }
